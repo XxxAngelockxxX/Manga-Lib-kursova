@@ -36,4 +36,5 @@ public class MangaGenreController {
 
         return ResponseEntity.ok("Жанр '" + genre.getName() + "' успішно додано до манги '" + manga.getTitle() + "'");
     }
+
 }

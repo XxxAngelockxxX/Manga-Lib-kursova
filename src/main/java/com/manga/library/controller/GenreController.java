@@ -56,4 +56,5 @@ public class GenreController {
         genreService.deleteGenre(id);
         return ResponseEntity.noContent().build();
     }
+
 }

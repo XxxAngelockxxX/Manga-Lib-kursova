@@ -34,4 +34,5 @@ public class MangaTagController {
 
         return ResponseEntity.ok("Тег '" + tag.getName() + "' успішно додано до манги '" + manga.getTitle() + "'");
     }
+
 }

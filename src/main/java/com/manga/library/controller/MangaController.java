@@ -78,4 +78,5 @@ public class MangaController {
         mangaService.deleteManga(id);
         return ResponseEntity.noContent().build();
     }
+
 }
