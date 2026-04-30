@@ -2,14 +2,14 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:15-alpine
     container_name: manga_postgres
     environment:
       POSTGRES_DB: manga_db
       POSTGRES_USER: Angelock
       POSTGRES_PASSWORD: 415263
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
