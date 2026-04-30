@@ -3,21 +3,7 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
-  datasource:
-    url: jdbc:postgresql://localhost:5433/manga_db
-    username: Angelock
-    password: 415263
-    driver-class-name: org.postgresql.Driver
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: 967535934233-u2kk9vmbf7p66m4g7nmk4e6hded7u3jm.apps.googleusercontent.com
-            client-secret: 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
-            scope:
-              - email
-              - profile
+
 file:
   upload-dir: uploads
 
