@@ -11,8 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +25,9 @@ public class ChapterService {
     private final MangaRepository mangaRepository;
     private final PageRepository pageRepository;
     private final FileStorageService fileStorageService;
+
+    // Рекомендую винести цей корінь у константу або config
+    private static final String UPLOAD_ROOT = "uploads";
 
     @Transactional
     public Chapter createChapterWithZip(Long mangaId, Double chapterNumber, String title, MultipartFile zipFile) {
@@ -33,42 +39,51 @@ public class ChapterService {
                 .chapterNumber(chapterNumber)
                 .title(title)
                 .manga(manga)
+                .pages(new ArrayList<>())
                 .build();
-        chapter = chapterRepository.save(chapter);
 
-        // 2. Розпаковуємо файли
-        List<String> imagePaths = fileStorageService.extractZipAndSaveImages(zipFile, mangaId, chapterNumber);
+        // Зберігаємо відразу, щоб отримати ID для формування шляху видалення пізніше
+        final Chapter savedChapter = chapterRepository.save(chapter);
+
+        // 2. Розпаковуємо файли (передаємо ID розділу для унікальності папки)
+        List<String> relativePaths = fileStorageService.extractZipAndSaveImages(zipFile, mangaId, chapterNumber);
 
         // 3. Створюємо сутності сторінок
         List<Page> pages = new ArrayList<>();
-        int pageNum = 1;
-        for (String path : imagePaths) {
+        for (int i = 0; i < relativePaths.size(); i++) {
             Page page = Page.builder()
-                    .pageNumber(pageNum++)
-                    .filePath("/uploads/" + path) // Формуємо шлях для вебу
-                    .chapter(chapter)
+                    .pageNumber(i + 1)
+                    .filePath("/" + UPLOAD_ROOT + "/" + relativePaths.get(i)) // Шлях для фронтенда
+                    .chapter(savedChapter)
                     .build();
             pages.add(page);
         }
 
         // 4. Зберігаємо сторінки в базу
         pageRepository.saveAll(pages);
-        chapter.setPages(pages);
+        savedChapter.setPages(pages);
 
-        return chapter;
+        return savedChapter;
     }
+
     @Transactional
     public void deleteChapter(Long chapterId) {
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new RuntimeException("Розділ не знайдено"));
 
+        // Зберігаємо шлях перед видаленням з БД
         Long mangaId = chapter.getManga().getId();
+        Double chapterNum = chapter.getChapterNumber();
 
         // 1. Видаляємо з БД
         chapterRepository.delete(chapter);
 
         // 2. Видаляємо папку з картинками
-        String path = "uploads/mangas/" + mangaId + "/chapters/" + chapterId + "/";
-        org.springframework.util.FileSystemUtils.deleteRecursively(new java.io.File(path));
+        // Шлях має бути синхронізований з тим, як зберігає FileStorageService
+        File chapterFolder = Paths.get(UPLOAD_ROOT, "manga", mangaId.toString(), "chapters", chapterNum.toString()).toFile();
+
+        if (chapterFolder.exists()) {
+            org.springframework.util.FileSystemUtils.deleteRecursively(chapterFolder);
+        }
     }
 }

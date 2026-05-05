@@ -90,4 +90,7 @@ public class MangaService {
         String path = "uploads/mangas/" + id + "/";
         org.springframework.util.FileSystemUtils.deleteRecursively(new java.io.File(path));
     }
+    public List<Manga> searchMangaByTitle(String title) {
+        return mangaRepository.findByTitleContainingIgnoreCase(title);
+    }
 }

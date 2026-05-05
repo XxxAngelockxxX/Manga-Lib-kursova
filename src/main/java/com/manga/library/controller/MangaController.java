@@ -3,6 +3,7 @@ package com.manga.library.controller;
 import com.manga.library.dto.MangaCreateDto;
 import com.manga.library.dto.MangaDto;
 import com.manga.library.model.Manga;
+import jakarta.validation.Valid;
 import com.manga.library.model.Tag;
 import com.manga.library.repository.MangaRepository;
 import com.manga.library.service.MangaService;
@@ -31,12 +32,13 @@ public class MangaController {
             description = "Дозволяє зареєструвати нову мангу в системі. Доступно тільки для ADMIN та AUTHOR.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Мангу успішно створено"),
+            @ApiResponse(responseCode = "400", description = "Помилка валідації вхідних даних"),
             @ApiResponse(responseCode = "403", description = "Недостатньо прав для створення манги")
     })
     @PostMapping
     // Встановлюємо охоронця: створювати картку манги можуть автори або адміни
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_AUTHOR')")
-    public MangaDto createManga(@RequestBody MangaCreateDto createDto) {
+    public MangaDto createManga(@Valid @RequestBody MangaCreateDto createDto) { // <--- ДОДАНО @Valid ТУТ
         Manga manga = mangaService.createManga(
                 createDto.getTitle(),
                 createDto.getDescription(),
@@ -78,5 +80,11 @@ public class MangaController {
         mangaService.deleteManga(id);
         return ResponseEntity.noContent().build();
     }
-
+    @Operation(summary = "Пошук манги за назвою", description = "US-1.3: Пошук манги за частиною назви")
+    @GetMapping("/search")
+    public List<MangaDto> searchManga(@RequestParam String title) {
+        return mangaService.searchMangaByTitle(title).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
 }
