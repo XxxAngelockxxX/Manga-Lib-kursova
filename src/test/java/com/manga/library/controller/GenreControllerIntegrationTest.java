@@ -81,4 +81,5 @@ public class GenreControllerIntegrationTest {
                         .param("name", "Меха"))
                 .andExpect(status().is3xxRedirection());
     }
+
 }

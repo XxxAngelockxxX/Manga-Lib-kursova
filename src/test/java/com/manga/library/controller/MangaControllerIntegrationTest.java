@@ -147,4 +147,5 @@ public class MangaControllerIntegrationTest {
                         .content(invalidMangaJson))
                 .andExpect(status().isBadRequest()); // Очікуємо 400 Bad Request
     }
+
 }

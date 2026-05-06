@@ -103,4 +103,5 @@ public class UserControllerIntegrationTest {
                 .andExpect(status().is3xxRedirection()) // Очікуємо 302 редирект
                 .andExpect(redirectedUrlPattern("**/oauth2/authorization/google")); // Перевіряємо, що перенаправляє саме на логін
     }
+
 }

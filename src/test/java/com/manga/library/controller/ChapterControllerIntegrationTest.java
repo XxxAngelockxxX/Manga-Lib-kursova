@@ -139,4 +139,6 @@ public class ChapterControllerIntegrationTest {
                         .param("chapterNumber", "1.0"))
                 .andExpect(status().isForbidden()); // Тепер тест успішно отримає 403
     }
+
+
 }
