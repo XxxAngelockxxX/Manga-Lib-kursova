@@ -8,16 +8,14 @@ spring:
     username: Angelock
     password: 415263
     driver-class-name: org.postgresql.Driver
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: 967535934233-u2kk9vmbf7p66m4g7nmk4e6hded7u3jm.apps.googleusercontent.com
-            client-secret: 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
-            scope:
-              - email
-              - profile
+jwt:
+  access:
+    secret: "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2"
+    expiration: 900000
+  refresh:
+    secret: "f6e5d4c3b2a1f6e5d4c3b2a1f6e5d4c3b2a1f6e5d4c3b2a1f6e5d4c3b2a1f6e5"
+    expiration: 604800000
+
 file:
   upload-dir: uploads
 

@@ -105,30 +105,30 @@ public class MangaControllerIntegrationTest {
         String mangaJson = """
                 {
                     "title": "Манга звичайного юзера",
-                    "description": "Спроба хаку"
+                    "description": "Спроба хаку",
+                    "authorId": %d
                 }
-                """;
+                """.formatted(testAuthor.getId());
 
         mockMvc.perform(post("/api/mangas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mangaJson))
-                .andExpect(status().isForbidden()); // Очікуємо 403, бо тільки автори можуть створювати
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void shouldReturnRedirectWhenGuestTriesToCreateManga() throws Exception {
-        // Запит без авторизації взагалі
+    void shouldReturnForbiddenWhenGuestTriesToCreateManga() throws Exception {
         String mangaJson = """
                 {
-                    "title": "Манга гостя"
+                    "title": "Манга гостя",
+                    "authorId": %d
                 }
-                """;
+                """.formatted(testAuthor.getId());
 
         mockMvc.perform(post("/api/mangas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mangaJson))
-                .andExpect(status().is3xxRedirection()) // Очікуємо 302 редирект
-                .andExpect(redirectedUrlPattern("**/oauth2/authorization/google")); // Перевіряємо, що перенаправляє на Google
+                .andExpect(status().isForbidden());
     }
 
     @Test

@@ -94,18 +94,16 @@ public class ChapterControllerIntegrationTest {
     }
 
     @Test
-    void shouldReturnRedirectWhenGuestTriesToUpload() throws Exception {
+    void shouldReturnForbiddenWhenGuestTriesToUpload() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.zip", "application/zip", "content".getBytes()
         );
 
-        // Без анотації @WithMockUser це запит від неавторизованого гостя
         mockMvc.perform(multipart("/api/chapters")
                         .file(file)
                         .param("mangaId", "1")
                         .param("chapterNumber", "2.0"))
-                .andExpect(status().is3xxRedirection()) // Очікуємо 302 редирект замість 403
-                .andExpect(redirectedUrlPattern("**/oauth2/authorization/google")); // Перевіряємо перенаправлення на логін
+                .andExpect(status().isForbidden());
     }
 
     @Test

@@ -74,12 +74,10 @@ public class GenreControllerIntegrationTest {
     }
 
     @Test
-    void shouldReturnRedirectionWhenGuestTriesToCreateGenre() throws Exception {
-        // Гість (без анотації @WithMockUser) намагається зробити POST запит
-        // Оскільки у нас OAuth2, Spring Security перенаправить його на сторінку логіну (302)
+    void shouldReturnForbiddenWhenGuestTriesToCreateGenre() throws Exception {
         mockMvc.perform(post("/api/genres")
                         .param("name", "Меха"))
-                .andExpect(status().is3xxRedirection());
+                .andExpect(status().isForbidden());
     }
 
 }

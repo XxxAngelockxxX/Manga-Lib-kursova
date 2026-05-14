@@ -97,11 +97,9 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    void shouldReturnRedirectWhenGuestTriesToAccessUsers() throws Exception {
-        // Гість (без авторизації) намагається отримати список
+    void shouldReturnForbiddenWhenGuestTriesToAccessUsers() throws Exception {
         mockMvc.perform(get("/api/users"))
-                .andExpect(status().is3xxRedirection()) // Очікуємо 302 редирект
-                .andExpect(redirectedUrlPattern("**/oauth2/authorization/google")); // Перевіряємо, що перенаправляє саме на логін
+                .andExpect(status().isForbidden());
     }
 
 }
